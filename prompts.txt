@@ -1,0 +1,333 @@
+================================================================================
+AI PROMPTING HISTORY & ENGINEERING WORKFLOW LOG
+PlayPowerLabs Airbnb Vacation Rental Listing Platform
+================================================================================
+
+Candidate Technical Submission: Airbnb Vacation Rental Listing Page
+Target Property: Luxury 1BHK Rental with Jacuzzi in Candolim, North Goa
+Tech Stack: React 19, TypeScript (Strict), Tailwind CSS v4, Vite, Framer Motion
+
+--------------------------------------------------------------------------------
+EXECUTIVE SUMMARY: MY PROMPTING PHILOSOPHY & ENGINEERING STYLE
+--------------------------------------------------------------------------------
+
+When leveraging AI for frontend and systems engineering, my approach prioritizes
+deterministic decomposition over single-prompt generation. Rather than asking an
+LLM to "build an entire Airbnb clone" in one massive, error-prone prompt, I 
+decompose the engineering lifecycle into sequential, contract-bound stages.
+
+Core Principles of My Prompting Style:
+1. Domain & Persona Specialization: Constrain the AI's cognitive scope to
+   specialized roles (e.g., Design Systems Specialist, Interactive Motion Engineer,
+   Adversarial QA Auditor, Accessibility Advocate).
+2. Contract-First Specifications: Every prompt defines explicit inputs, strict
+   architectural constraints (1280px container bounds, zero loose 'any' types,
+   verbatimModuleSyntax), and deterministic acceptance criteria.
+3. Adversarial Feedback Loops: Separate generation from evaluation. After
+   generating components, I switch to an adversarial auditor persona to find
+   visual regressions, focus-trapping bugs, and DOM layout shifts.
+4. Verification Gates: Each stage requires running static analysis (oxlint) and
+   TypeScript compilation (tsc -b && vite build) before proceeding downstream.
+
+
+================================================================================
+CHRONOLOGICAL PROMPT LOG
+================================================================================
+
+--------------------------------------------------------------------------------
+SESSION 01: Reverse-Engineering, Domain Taxonomy & Listing Schema
+--------------------------------------------------------------------------------
+[Purpose]:
+Extract the target listing's visual tokens, typography scale, responsive
+breakpoints, and establish a strongly-typed data schema before writing UI code.
+
+[System Role / Persona]:
+Senior Frontend Architect & Systems Analyst
+
+[User Prompt]:
+"You are a Senior Frontend Architect. We are building a pixel-accurate,
+production-tier clone of the Airbnb Vacation Rental Listing Page for
+'Romantic Jacuzzi 1BHK Candolim | Mirashya UG10'.
+
+Perform an exhaustive architectural and structural deconstruction of the target:
+1. Layout Geometry:
+   - Determine the maximum container boundaries (1280px standard container) and
+     responsive padding breakpoints (px-6 md:px-10 xl:px-20).
+   - Analyze the 2-column content layout (8-column listing details vs 4-column
+     sticky reservation card sidebar).
+2. Visual Token Hierarchy:
+   - Identify primary brand colors (#FF385C), charcoal text (#222222), muted
+     captions (#717171), subtle divider borders (#DDDDDD / #EBEBEB), and elevation
+     box-shadows.
+   - Map font families (Inter) and typographic scale from 32px display titles down
+     to 12px micro-labels.
+3. Domain Modeling:
+   - Create comprehensive TypeScript interfaces in src/types/listing.ts:
+     ListingData, ListingPhoto, AmenityItem, ReviewItem.
+4. Data Seeding:
+   - Construct a realistic dataset in src/data/listing.ts containing 15 high-res
+     photos mapped to room categories ('Living Room', 'Patio & Jacuzzi', etc.).
+
+Constraints: Strict TypeScript with verbatimModuleSyntax; zero 'any' typings."
+
+[Engineering Output]:
+- Established src/types/listing.ts with complete type definitions.
+- Created src/data/listing.ts populated with realistic property data and photos.
+
+
+--------------------------------------------------------------------------------
+SESSION 02: Design Tokens & Polymorphic UI Primitives
+--------------------------------------------------------------------------------
+[Purpose]:
+Establish the Tailwind CSS v4 @theme configuration in src/index.css and build
+accessible, polymorphic base primitives.
+
+[System Role / Persona]:
+Visual Systems & Design Token Engineer
+
+[User Prompt]:
+"You are a Design Systems Specialist. We need to construct the foundation and
+reusable UI primitives for the Airbnb listing platform.
+
+Tasks:
+1. Tailwind CSS v4 Theme Architecture:
+   - Configure @theme directives directly in src/index.css.
+   - Define custom color variables (brand primary #FF385C, text dark, borders).
+   - Configure container constraints and standardized focus rings:
+     focus-visible:ring-2 focus-visible:ring-black focus-visible:outline-none.
+2. Polymorphic Button Primitive (src/components/ui/Button.tsx):
+   - Support variants: 'primary' (Airbnb coral gradient/fill), 'secondary',
+     'outline', 'ghost'. Sizes: 'sm', 'md', 'lg'.
+3. Circular IconButton Primitive (src/components/ui/IconButton.tsx):
+   - Accessible circular action button with compulsory aria-label prop.
+4. Accessible Modal Base Primitive (src/components/ui/Modal.tsx):
+   - Framer Motion backdrop fade and spring-animated dialog pop.
+   - Integrated Escape dismiss and cyclical focus trapping.
+5. Section Container Primitive (src/components/ui/Section.tsx):
+   - Consistent vertical rhythms with standardized top/bottom border dividers.
+
+Verification: npm run build must succeed with zero TypeScript errors. Use Lucide
+React icons exclusively (no emoji icons)."
+
+[Engineering Output]:
+- Configured custom tokens in src/index.css.
+- Implemented Button.tsx, IconButton.tsx, Modal.tsx, Section.tsx in src/components/ui/.
+
+
+--------------------------------------------------------------------------------
+SESSION 03: Page Assembly & Interactive Core Sections
+--------------------------------------------------------------------------------
+[Purpose]:
+Assemble the complete listing page from top to bottom, implementing all domain
+components and maintaining desktop-first responsive constraints.
+
+[System Role / Persona]:
+Senior UI Engineer & Frontend Assembler
+
+[User Prompt]:
+"You are a Senior UI Engineer. Implement the full listing page structure by
+composing atomic domain components top-to-bottom.
+
+Page Sections to Construct:
+1. Global Header (src/components/Header/Header.tsx): Airbnb logo, search pill,
+   and profile controls.
+2. Sticky Sub-Navigation Bar (src/components/Header/StickySubNav.tsx):
+   Scroll-spy reveal when the hero leaves the viewport, anchor links, and CTA.
+3. Listing Hero (src/components/ListingHero/): Title row, Share/Save, and 5-photo
+   Bento Grid with zoom hover physics.
+4. Core Content Sections (src/components/ListingContent/): Listing summary, Guest
+   Favourite badge, Host card, sleeping arrangements, amenities matrix.
+5. Interactive Dual-Month Calendar (src/components/Calendar/DualMonthCalendar.tsx):
+   Date range selection with minimum stay rules, range highlights, clear action.
+6. Sticky Reservation Card (src/components/Reservation/): Dynamic rate
+   calculation based on dates, 10% discount claim, guest picker, price breakdown.
+7. Reviews, Location Map, and Nearby Stays: 4.95 rating display with progress
+   bars, Candolim Beach map with pulse marker, curated stays.
+
+Assemble all components inside src/App.tsx and ensure 1280px max container width."
+
+[Engineering Output]:
+- Assembled all 14 page sections in src/App.tsx.
+- Connected calendar selection state with the sticky reservation card.
+
+
+--------------------------------------------------------------------------------
+SESSION 04: Overlay Choreography & Full-Screen Photo Tour
+--------------------------------------------------------------------------------
+[Purpose]:
+Create the full-screen categorized photo tour modal with smooth transitions,
+category filtering pills, and scroll lock.
+
+[System Role / Persona]:
+Interaction & Motion Engineer
+
+[User Prompt]:
+"You are an Interactive Motion Engineer. Build the dedicated full-screen Photo Tour
+overlay (src/components/PhotoTour/PhotoTourModal.tsx).
+
+Requirements:
+1. Triggering Points: Hero bento grid photos, 'Show all 15 photos' button.
+2. Layout & Categorization: Sticky category navigation bar ('Living Room',
+   'Patio & Jacuzzi', 'Kitchen & Dining', etc.), smooth anchor scrolling, room
+   amenities headers.
+3. Interaction Mechanics: Clicking any photo opens the single-photo Lightbox
+   viewer. Background scroll locking (body must not scroll). Escape key and
+   Back button dismiss the tour.
+4. Motion Physics: Hardware-accelerated transitions via Framer Motion."
+
+[Engineering Output]:
+- Created src/components/PhotoTour/PhotoTourModal.tsx with category navigation,
+  scroll locking, and Framer Motion transitions.
+
+
+--------------------------------------------------------------------------------
+SESSION 05: Theater-Mode Lightbox & Directional Spring Physics
+--------------------------------------------------------------------------------
+[Purpose]:
+Implement a high-fidelity, single-photo theater viewer with directional sliding
+animations, boundary controls, and keyboard navigation.
+
+[System Role / Persona]:
+Motion Physics & State Machine Engineer
+
+[User Prompt]:
+"Implement the single-photo Lightbox viewer (src/components/Lightbox/LightboxViewer.tsx).
+
+Specifications:
+1. Presentation: Deep black backdrop, centered high-res image, image counter
+   ('i / 15'), room category badge, chevron navigation with boundary disable states.
+2. Direction-Aware Slide Animations: Framer Motion AnimatePresence with directional
+   vectors (forward: slides from right; backward: slides from left).
+3. Keyboard Trapping & Shortcuts: ArrowLeft (previous), ArrowRight (next), Escape (close).
+4. Focus Trapping: Focus trapped inside the lightbox. Restores focus to the thumbnail
+   element that initiated the viewer upon closing."
+
+[Engineering Output]:
+- Built src/components/Lightbox/LightboxViewer.tsx with directional slide variants
+  and keyboard navigation.
+
+
+--------------------------------------------------------------------------------
+SESSION 06: Adversarial Visual QA & Defect Elimination
+--------------------------------------------------------------------------------
+[Purpose]:
+Perform visual diffing against reference designs, systematically triaging and
+eliminating visual discrepancies.
+
+[System Role / Persona]:
+Adversarial Visual QA Auditor
+
+[User Prompt]:
+"Act as a strict Adversarial Visual QA Auditor. Rigorously compare our frontend
+implementation against reference visual standards.
+
+Audit Criteria & Discrepancy Classification:
+- Priority 0 (Blocker): Container width misalignment, broken columns, uncontained overflows.
+- Priority 1 (High): Vertical rhythm discrepancies, font size/weight deviations.
+- Priority 2 (Medium): Hover transition mismatches, icon sizing differences.
+- Priority 3 (Low): Subtle border color nuances, micro-spacing.
+
+Inspect Header, Bento Grid, Content Columns, Booking Card, Divider Lines.
+Generate an audit report and provide precise code remediations for P0-P2 issues."
+
+[Engineering Output]:
+- Standardized container constraints (max-w-[1280px]).
+- Adjusted column layout ratios and gutter widths.
+- Aligned typography weights and divider borders. Zero unresolved P0/P1 defects.
+
+
+--------------------------------------------------------------------------------
+SESSION 07: Universal Accessibility (WCAG 2.1 AA) Remediation
+--------------------------------------------------------------------------------
+[Purpose]:
+Conduct a comprehensive accessibility audit enforcing keyboard operability,
+screen-reader semantics, and layout-shift-free scroll locks.
+
+[System Role / Persona]:
+Universal Accessibility (a11y) Specialist
+
+[User Prompt]:
+"You are an Accessibility Compliance Auditor. Audit and remediate the application
+to ensure full WCAG 2.1 Level AA conformance.
+
+Mandatory Checks & Fixes:
+1. Eliminate Desktop Scrollbar Layout Shift:
+   - Setting overflow: hidden on document.body causes browser scrollbars to
+     disappear, jumping the entire 1280px page 15-17px to the right.
+   - Build custom hook src/hooks/useBodyScrollLock.ts calculating
+     window.innerWidth - clientWidth and applying compensation padding to right edge.
+2. Bi-Directional Focus Restoration:
+   - Save document.activeElement before opening modals.
+   - Restore focus programmatically to triggering element on Escape/close.
+3. Keyboard Focus Trapping:
+   - Cyclical Tab / Shift+Tab focus traps inside modals and lightbox.
+4. Semantic Markup & ARIA:
+   - Single <h1> per page; explicit aria-label on icon buttons; descriptive alt tags;
+     @media (prefers-reduced-motion: reduce) support."
+
+[Engineering Output]:
+- Implemented src/hooks/useBodyScrollLock.ts with scrollbar compensation padding.
+- Enhanced focus capture and restoration in LightboxViewer.tsx and Modal.tsx.
+- Added high-contrast :focus-visible styling in src/index.css.
+
+
+--------------------------------------------------------------------------------
+SESSION 08: Distributed Cloud Architecture & Scalability Modeling
+--------------------------------------------------------------------------------
+[Purpose]:
+Design a resilient, multi-AZ production cloud architecture diagram for an
+internet-scale vacation rental marketplace.
+
+[System Role / Persona]:
+Enterprise Cloud Solutions Architect
+
+[User Prompt]:
+"Act as an Enterprise Cloud Solutions Architect. Design a production-grade,
+multi-tier cloud infrastructure diagram for an internet-scale vacation rental
+platform inspired by Airbnb.
+
+Architecture Tiers to Model:
+1. Edge Tier & Client Touchpoints: Client Web SPA/PWA, Cloudflare Anycast CDN & WAF,
+   Serverless Edge Handlers.
+2. Presentation Tier: Containerized Next.js / SSR Cluster (AWS EKS Multi-AZ),
+   S3 Static Asset Origin.
+3. Edge Ingress & Routing: Envoy Ingress Gateway, Multi-AZ NLB/ALB, Experience API (BFF).
+4. Domain Microservices Mesh: Identity & Auth, Property Catalog, Reservation Engine,
+   User & Profile, Reviews, Financial/Payment Service (Stripe).
+5. Data Persistence & Acceleration: AWS Aurora PostgreSQL (Multi-AZ Master + 3x Replicas),
+   Redis Enterprise Cache, Amazon S3 Media Storage, OpenSearch Discovery Fleet.
+6. Async Event Fabric & Workers: Apache Kafka Event Mesh, Debezium CDC Search Ingestion,
+   Media Transcoding Workers, Notification Consumer Fleet (Twilio/SendGrid).
+
+Write a Python Matplotlib script (scripts/generate_architecture_diagram.py) that
+programmatically exports high-resolution 16:9 PNG (300 DPI), vector PDF, and SVG."
+
+[Engineering Output]:
+- Created scripts/generate_architecture_diagram.py.
+- Generated architecture/architecture-diagram.png (6570x3698 px), .pdf, and .svg.
+
+
+--------------------------------------------------------------------------------
+SESSION 09: Static Analysis, Linter Hygiene & Final Production Verification
+--------------------------------------------------------------------------------
+[Purpose]:
+Enforce zero TypeScript errors, clean linter execution, dead code elimination,
+and final build validation.
+
+[System Role / Persona]:
+Static Analysis & Release Governance Lead
+
+[User Prompt]:
+"Perform a final production-readiness review and release verification:
+1. Execute TypeScript type checking (tsc -b) and production bundling (vite build).
+   Fix all type mismatches, ensure verbatimModuleSyntax compliance.
+2. Static Analysis: Run oxlint across all source files; ensure 0 warnings and 0 errors.
+3. Clean Up: Remove unused components, dead imports, and obsolete hooks.
+4. Generate Documentation: Document project structure, architecture highlights,
+   running instructions, and known limitations in README.md and CLAUDE.md."
+
+[Engineering Output]:
+- tsc -b && vite build compiled cleanly in ~350ms.
+- oxlint reported 0 errors and 0 warnings across all source files.
+- Compiled complete project documentation.
+================================================================================
